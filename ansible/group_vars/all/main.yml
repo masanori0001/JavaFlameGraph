@@ -1,0 +1,5 @@
+install_dir: /opt/java-flame-graph
+java_home: /usr/lib/jvm/java-8-openjdk-amd64
+jmaps_path: Misc/java/jmaps
+agent: perf-map-agent
+

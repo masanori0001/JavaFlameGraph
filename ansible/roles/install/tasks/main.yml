@@ -1,0 +1,29 @@
+- block:
+    - file: path={{ install_dir }} state=directory
+    - apt: name={{ item }} state=present update_cache=yes
+      with_items:
+       - g++
+       - cmake
+    - git:
+       repo: https://github.com/jrudolph/perf-map-agent
+       dest: {{ install_dir }}
+       depth: 1
+    - set_fact:
+       agent: perf-map-agent
+    - shell: cmake {{ install_dir}}/{{ agent }}
+    - shell: make -C {{ install_dir}}/{{ agent }}
+    - git:
+       repo: https://github.com/brendangregg/Misc.git
+       dest: {{ install_dir }}
+    - lineinfile:
+       dest: {{ install_dir }}/{{ jmaps_path }}
+       regexp: {{ item.regexp }}
+       line: {{ item.line }}
+      with_items:
+       - { regexp: '^JAVA_HOME', line: 'JAVA_HOME='{{ java_home }} }
+       - { regexp: '^AGENT_HOME', line: 'AGENT_HOME='{{ install_dir }}/{{ jmaps_path }} }
+    - git:
+       repo: https://github.com/brendangregg/FlameGraph
+       dest: {{ install_dir }}
+       depth: 1
+  become: true
